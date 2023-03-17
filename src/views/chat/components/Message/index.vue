@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { NDropdown } from 'naive-ui'
 import AvatarComponent from './Avatar.vue'
 import TextComponent from './Text.vue'
@@ -41,6 +41,10 @@ const options = [
     icon: iconRender({ icon: 'ri:delete-bin-line' }),
   },
 ]
+
+// watch(props, async (newQuestion, oldQuestion) => {
+// 	console.log(newQuestion);
+// })
 
 function handleSelect(key: 'copyRaw' | 'copyText' | 'delete') {
   switch (key) {

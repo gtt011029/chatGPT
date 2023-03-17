@@ -117,6 +117,8 @@ async function chatReplyProcess(
         options = { ...lastContext }
     }
 
+		globalThis.console.log('message: ', message)
+
     const response = await api.sendMessage(message, {
       ...options,
       onProgress: (partialResponse) => {

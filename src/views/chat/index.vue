@@ -35,7 +35,12 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 
 const { uuid } = route.params as { uuid: string }
 
-const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+// 竟然在computed中做初始化操作
+const dataSources = computed(() => {
+	console.log('计算 dataSources');
+	// 从路由中获取uuid， 然后根据uuid获取其聊天记录
+	return chatStore.getChatByUuid(+uuid)
+})
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
 const prompt = ref<string>('')
@@ -105,6 +110,7 @@ async function onConversation() {
         options,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
+					// 在获取进度的时候获取返回的数据
           const xhr = event.target
           const { responseText } = xhr
           // Always process the final line
@@ -114,6 +120,7 @@ async function onConversation() {
             chunk = responseText.substring(lastIndex)
           try {
             const data = JSON.parse(chunk)
+						console.log(data);
             updateChat(
               +uuid,
               dataSources.value.length - 1,
@@ -128,12 +135,12 @@ async function onConversation() {
               },
             )
 
-            if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
-              lastText = data.text
-              message = ''
-              return fetchChatAPIOnce()
-            }
+            // if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
+            //   options.parentMessageId = data.id
+            //   lastText = data.text
+            //   message = ''
+            //   return fetchChatAPIOnce()
+            // }
 
             scrollToBottom()
           }
@@ -197,6 +204,7 @@ async function onConversation() {
 }
 
 async function onRegenerate(index: number) {
+	console.log('onRegenerate')
   if (loading.value)
     return
 
@@ -230,6 +238,7 @@ async function onRegenerate(index: number) {
   try {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
+			console.log('fetchChatAPIOnce-2')
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
         options,
